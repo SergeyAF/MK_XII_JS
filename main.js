@@ -1,3 +1,6 @@
+const $root = document.querySelector('.arenas')
+const $randomButton = document.querySelector('.button')
+
 const characters = {
   scorpion: {
     name: 'Scorpion',
@@ -46,10 +49,14 @@ const characters = {
   },
 }
 
-const createPlayer = (playerClass, character) => {
-  const $root = document.querySelector('.arenas')
+const selectCharacter = (character, position) => {
+  return {player: position, ...character}
+}
+
+const createPlayer = (character) => {
+  console.log(character)
   const $onePlayer = document.createElement('div')
-  $onePlayer.classList.add(playerClass)
+  $onePlayer.classList.add(`player${character.player}`)
   $onePlayer.innerHTML = `
     <div class="progressbar">
         <div class="life" style="width: ${character.hp}%"></div>
@@ -59,9 +66,35 @@ const createPlayer = (playerClass, character) => {
         <img src=${character.img} />
     </div> 
   `
-
-  $root.appendChild($onePlayer)
+  return $onePlayer
 }
 
-createPlayer('player1', characters.sonya)
-createPlayer('player2', characters.liuKang)
+function changeHP(player) {
+  const $playerLife = document.querySelector('.player'+ player.player +' .life')
+  player.hp -= Math.ceil(Math.random() * 20);
+  console.log(player.hp)
+  $playerLife.style.width = player.hp > 0 ? player.hp + '%' : 0;
+  if (player.hp < 0 ) {
+    $root.appendChild(playerWin(player.name))
+    $randomButton.disabled = true;
+  }
+}
+
+function playerWin(name) {
+  const $loseTitle = document.createElement('div')
+  const winName = name === player1.name ? player2.name : player1.name
+  $loseTitle.classList.add('winTitle');
+  $loseTitle.innerText = winName + ' win';
+  return $loseTitle;
+}
+
+$randomButton.addEventListener('click', ()=>{
+  changeHP(player1);
+  changeHP(player2)
+});
+
+const player1 = selectCharacter(characters.sonya, 1);
+const player2 = selectCharacter(characters.liuKang, 2)
+
+$root.appendChild(createPlayer(player1));
+$root.appendChild(createPlayer(player2));
